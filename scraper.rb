@@ -30,13 +30,20 @@ end
 
 def scrape_person(url)
   person = noko_for(url)
+
+  sort_name = person.css('div.cvTitle').text.tidy
+  given_names, family_names = sort_name.split(/[[:space:]]/).partition { |w| w == w.upcase }
+
   sites = sites = person.css('div.cvData a/@href').map(&:text).map(&:tidy).reject { |s| s.include? 'mailto:' }
 
   data = { 
     id: url.to_s[/cid=(\d+)/, 1],
-    name: person.css('div.cvTitle').text.strip,
+    name: (given_names + family_names).join(' '),
+    given_name: given_names.join(' '),
+    family_name: family_names.join(' '),
+    sort_name: sort_name,
     image: person.xpath('//img[@id="cvImage"]/@src').text,
-    email: person.css('div.cvData a[href*="mailto:"]').text,
+    email: person.css('div.cvData a[href*="mailto:"]').text.tidy,
     website: sites.find { |s| s.include? 'parliament.mn' },
     facebook: sites.find { |s| s.include? 'facebook' },
     twitter: sites.find { |s| s.include? 'twitter' },
