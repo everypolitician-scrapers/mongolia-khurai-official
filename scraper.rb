@@ -31,6 +31,9 @@ end
 def scrape_person(url)
   person = noko_for(url)
 
+  mn_url = url.to_s.sub('/en/','/')
+  mn_noko = noko_for(mn_url)
+
   sort_name = person.css('div.cvTitle').text.tidy
   given_names, family_names = sort_name.split(/[[:space:]]/).partition { |w| w == w.upcase }
 
@@ -42,6 +45,7 @@ def scrape_person(url)
     given_name: given_names.join(' '),
     family_name: family_names.join(' '),
     sort_name: sort_name,
+    name__mn: mn_noko.css('div.cvTitle').text.tidy,
     image: person.xpath('//img[@id="cvImage"]/@src').text,
     email: person.css('div.cvData a[href*="mailto:"]').text.tidy,
     website: sites.find { |s| s.include? 'parliament.mn' },
