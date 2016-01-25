@@ -3,13 +3,8 @@
 
 require 'scraperwiki'
 require 'nokogiri'
-require 'date'
-require 'open-uri'
-
 require 'open-uri/cached'
-require 'colorize'
 require 'pry'
-require 'csv'
 
 class String
   def tidy
